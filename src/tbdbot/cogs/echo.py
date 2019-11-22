@@ -25,7 +25,7 @@ class Hello(commands.Cog):
     async def sysinfo(self, ctx):
         memory = psutil.virtual_memory()
         info = f"""```
-        {psuitl.cpu_count} CPUs @ {psutil.cpu_freq()} Mhz
+        {psutil.cpu_count} CPUs @ {psutil.cpu_freq()} Mhz
         CPU %: {psutil.cpu_percent(interval=1)}
         Total Memory (MB): {int(memory.total/1024/1024)}
         Available Memory (MB): {int(memory.available /1024/1024)}
