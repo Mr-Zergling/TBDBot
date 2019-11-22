@@ -1,7 +1,7 @@
 from discord.ext import commands
 
 def is_bot_bullshit(ctx):
-    return ctx.message.channel.id == 647172167284555779
+    return ctx.message.channel.id == 647172167284555779 or ctx.message.channel.id == 646039898381615115
 
 class Hello(commands.Cog):
     def __init__(self, bot):
