@@ -12,6 +12,7 @@ setup(name="TBDBot",
       install_requires=[
         'discord.py>1.2,<2',
         'pandas>0.25,<1',
-        'emoji>0.5,<1'
+        'emoji>0.5,<1',
+        'psutil>5.6,<6',
       ])
 
