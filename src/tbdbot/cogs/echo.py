@@ -2,12 +2,15 @@ from discord.ext import commands
 import psutil
 import platform
 
+
 def is_bot_channel(ctx):
     return ctx.message.channel.id == 647172167284555779 or ctx.message.channel.id == 646039898381615115
+
 
 class HelloCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.version = "1"
 
     @commands.command(name="version")
     @commands.check(is_bot_channel)
@@ -46,3 +49,9 @@ Plaform: {platform.platform()}```"""
         await self.bot.reply(ctx, 'HI DAD!1!1!!1ONE!1!ONE1!')
 
 
+def setup(bot):
+    bot.add_cog(HelloCog(bot))
+
+
+def teardown(bot):
+    bot.remove_cog(HelloCog(bot))

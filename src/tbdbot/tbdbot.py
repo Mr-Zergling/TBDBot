@@ -1,7 +1,4 @@
-import discord
 from discord.ext import commands
-from tbdbot.cogs.emoji import EmojiCog
-from tbdbot.cogs.echo import HelloCog
 import argparse
 
 
@@ -57,7 +54,8 @@ def main():
     parser.add_argument('--apikey')
     parser.add_argument('--development', action='store_true')
     args = parser.parse_args()
-    bot.add_cog(HelloCog(bot))
-    bot.add_cog(EmojiCog(bot))
     bot.set_development_mode(args.development)
+    bot.load_extension("tbdbot.cogs.manager")
+    bot.load_extension("tbdbot.cogs.echo")
+    bot.load_extension("tbdbot.cogs.emoji")
     bot.run(args.apikey)

@@ -81,3 +81,11 @@ async def process_message(message, add_count_fn):
 
 def date_to_string(date):
     return date.strftime("%Y-%m-%d")
+
+
+def setup(bot):
+    bot.add_cog(EmojiCog(bot))
+
+
+def teardown(bot):
+    bot.remove_cog(EmojiCog(bot))
