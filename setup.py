@@ -6,7 +6,7 @@ setup(name="TBDBot",
       packages=find_packages(where='src'),
       entry_points={
         'console_scripts': [
-            'TBDBot = tbdbot.cli:main',
+            'TBDBot = tbdbot.tbdbot:main',
         ]
       },
       install_requires=[
