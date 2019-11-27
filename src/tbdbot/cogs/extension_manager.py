@@ -80,7 +80,6 @@ class ExtensionManagerCog(commands.Cog):
         self.load_extension(name)
         try:
             await self.bot.reply(ctx, f"loaded extension {name}")
-            await ctx.invoke(self.ext_list)
         except ExtensionError:
             await self.bot.reply(ctx, f"error loading {name}")
 
@@ -90,7 +89,6 @@ class ExtensionManagerCog(commands.Cog):
         self.unload_extension(name)
         try:
             await self.bot.reply(ctx, f"unloaded extension {name}")
-            await ctx.invoke(self.ext_list)
         except ExtensionError:
             await self.bot.reply(ctx, f"error unloading {name}")
 
@@ -100,7 +98,6 @@ class ExtensionManagerCog(commands.Cog):
         self.reload_extension(name)
         try:
             await self.bot.reply(ctx, f"reloaded extension {name}")
-            await ctx.invoke(self.ext_list)
         except ExtensionError:
             await self.bot.reply(ctx, f"error reloading {name}")
 
