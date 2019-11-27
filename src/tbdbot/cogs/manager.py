@@ -49,7 +49,7 @@ class ExtensionManagerCog(commands.Cog):
     async def ext_list(self, ctx):
         cogs_dict = self.list_loaded_cogs()
         result = ""
-        for ext_name, cog_list in cogs_dict:
+        for ext_name, cog_list in cogs_dict.items():
             result += f"Extension {ext_name}"
             for cog in cog_list:
                 result += f"|-- {cog} - v{getattr(cog, 'version', 'ersion undefined')}"
