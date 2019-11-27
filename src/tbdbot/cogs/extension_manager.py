@@ -87,6 +87,10 @@ class ExtensionManagerCog(commands.Cog):
         except ExtensionError:
             await self.bot.reply(ctx, f"error loading {name}")
 
+    @ext_load.error
+    async def extension_error_handler(self, ctx, error):
+        await self.bot.reply(ctx, f"couldn't load that extension...")
+
     @commands.is_owner()
     @ext.command(name="unload")
     async def ext_unload(self, ctx, name):
@@ -96,6 +100,10 @@ class ExtensionManagerCog(commands.Cog):
         except ExtensionError:
             await self.bot.reply(ctx, f"error unloading {name}")
 
+    @ext_unload.error
+    async def extension_error_handler(self, ctx, error):
+        await self.bot.reply(ctx, f"couldn't unload that extension...")
+
     @commands.is_owner()
     @ext.command(name="reload")
     async def ext_reload(self, ctx, name):
@@ -103,10 +111,11 @@ class ExtensionManagerCog(commands.Cog):
             self.reload_all()
         else:
             self.reload_extension(name)
-        try:
-            await self.bot.reply(ctx, f"reloaded {name}")
-        except ExtensionError:
-            await self.bot.reply(ctx, f"error reloading {name}")
+        await self.bot.reply(ctx, f"reloaded {name}")
+
+    @ext_reload.error
+    async def extension_error_handler(self, ctx, error):
+        await self.bot.reply(ctx, f"couldn't reload that extension...")
 
 
 def setup(bot):
