@@ -1,4 +1,4 @@
-from discord.ext.commands import ExtensionError
+from discord.ext.commands.errors import ExtensionError
 
 from ..checks import is_bot_channel
 from collections import defaultdict
@@ -29,7 +29,7 @@ class ExtensionManagerCog(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
-        self.version = "0.1"
+        self.version = "0.2"
 
     def first_start(self):
         for extension in TBD_BOT_STARTUP_EXTENSIONS:
@@ -50,6 +50,10 @@ class ExtensionManagerCog(commands.Cog):
     def reload_extension(self, name):
         name = qualify_name(name)
         self.bot.reload_extension(name)
+
+    def reload_all(self):
+        for name, module in self.bot.extensions.items():
+            self.bot.reload_extension(name)
 
     def list_loaded_cogs(self):
         result = defaultdict(list)
@@ -95,9 +99,12 @@ class ExtensionManagerCog(commands.Cog):
     @commands.is_owner()
     @ext.command(name="reload")
     async def ext_reload(self, ctx, name):
-        self.reload_extension(name)
+        if name == "all":
+            self.reload_all()
+        else:
+            self.reload_extension(name)
         try:
-            await self.bot.reply(ctx, f"reloaded extension {name}")
+            await self.bot.reply(ctx, f"reloaded {name}")
         except ExtensionError:
             await self.bot.reply(ctx, f"error reloading {name}")
 
