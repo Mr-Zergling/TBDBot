@@ -48,7 +48,7 @@ class ExtensionManagerCog(commands.Cog):
     @ext.command(name="list")
     async def ext_list(self, ctx):
         cogs_dict = self.list_loaded_cogs()
-        result = "```"
+        result = "```\n"
         for ext_name, cog_list in cogs_dict.items():
             result += f"{ext_name}\n"
             for cog in cog_list:
