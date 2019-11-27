@@ -11,6 +11,11 @@ class TBDBot(commands.Bot):
     def set_development_mode(self, development_mode):
         self.development_mode = development_mode
 
+    def bot_setup(self):
+        self.load_extension("tbdbot.cogs.extension_manager")
+        manager = self.get_cog("ExtensionManagerCog")
+        manager.first_start()
+
     async def reply(self, ctx, content=None, *, tts=False, embed=None, file=None, files=None, delete_after=None,
                     nonce=None, dm_reply=False):
         if dm_reply or self.development_mode:
@@ -55,7 +60,5 @@ def main():
     parser.add_argument('--development', action='store_true')
     args = parser.parse_args()
     bot.set_development_mode(args.development)
-    bot.load_extension("tbdbot.cogs.manager")
-    bot.load_extension("tbdbot.cogs.echo")
-    bot.load_extension("tbdbot.cogs.emoji")
+    bot.bot_setup()
     bot.run(args.apikey)
