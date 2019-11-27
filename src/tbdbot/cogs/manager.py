@@ -48,11 +48,12 @@ class ExtensionManagerCog(commands.Cog):
     @ext.command(name="list")
     async def ext_list(self, ctx):
         cogs_dict = self.list_loaded_cogs()
-        result = ""
+        result = "```"
         for ext_name, cog_list in cogs_dict.items():
-            result += f"Extension {ext_name}"
+            result += f"{ext_name}\n"
             for cog in cog_list:
-                result += f"|-- {cog} - v{getattr(cog, 'version', 'ersion undefined')}"
+                result += f"|-- {cog} - v{getattr(cog, 'version', 'ersion undefined')}\n"
+        result += "```"
         await self.bot.reply(ctx, result)
 
 
