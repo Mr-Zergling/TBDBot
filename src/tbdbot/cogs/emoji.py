@@ -10,6 +10,7 @@ import discord
 class EmojiCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.version = "0.01"
 
     @commands.group(pass_context=True)
     async def emoji(self, ctx):

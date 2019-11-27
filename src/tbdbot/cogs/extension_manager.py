@@ -29,6 +29,7 @@ class ExtensionManagerCog(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
+        self.version = "0.1"
 
     def first_start(self):
         for extension in TBD_BOT_STARTUP_EXTENSIONS:
@@ -54,7 +55,7 @@ class ExtensionManagerCog(commands.Cog):
         result = defaultdict(list)
         for name, cog in self.bot.cogs.items():
             ext_list = result[unqualify_name(cog.__class__.__module__)]
-            ext_list.append(name)
+            ext_list.append(cog)
         return result
 
     @commands.group(pass_context=True)
@@ -69,7 +70,7 @@ class ExtensionManagerCog(commands.Cog):
         for ext_name, cog_list in cogs_dict.items():
             result += f"{ext_name}\n"
             for cog in cog_list:
-                result += f"|-- {cog} - v{getattr(cog, 'version', 'ersion undefined')}\n"
+                result += f"|-- {cog.qualified_name} - v{getattr(cog, 'version', 'ersion undefined')}\n"
         result += "```"
         await self.bot.reply(ctx, result)
 

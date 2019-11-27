@@ -7,6 +7,7 @@ class TBDBot(commands.Bot):
     def __init__(self, command_prefix):
         super().__init__(command_prefix)
         self.development_mode = False
+        self.version = "0.00001 prealpha"
 
     def set_development_mode(self, development_mode):
         self.development_mode = development_mode
