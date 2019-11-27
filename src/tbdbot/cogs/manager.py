@@ -2,10 +2,18 @@ from collections import defaultdict
 
 from discord.ext import commands
 
+TBD_BOT_COG_PREFIX = "tbdbot.cogs."
+
 
 def qualify_name(name):
-    if not name.starts_with("tbdbot.cogs."):
-        return "tbdbot.cogs." + name
+    if not name.starts_with(TBD_BOT_COG_PREFIX):
+        return TBD_BOT_COG_PREFIX + name
+    return name
+
+
+def unqualify_name(name):
+    if name.starts_with(TBD_BOT_COG_PREFIX):
+        return name.lstrip(TBD_BOT_COG_PREFIX)
     return name
 
 
@@ -29,7 +37,7 @@ class ExtensionManagerCog(commands.Cog):
     def list_loaded_cogs(self):
         result = defaultdict(list)
         for name, cog in self.bot.cogs.items():
-            ext_list = result[cog.__class__.__module__]
+            ext_list = result[unqualify_name(cog.__class__.__module__)]
             ext_list.append(name)
         return result
 
@@ -39,7 +47,13 @@ class ExtensionManagerCog(commands.Cog):
 
     @ext.command(name="list")
     async def ext_list(self, ctx):
-        await self.bot.reply(ctx, self.list_loaded_cogs())
+        cogs_dict = self.list_loaded_cogs()
+        result = ""
+        for ext_name, cog_list in cogs_dict:
+            result += f"Extension {ext_name}"
+            for cog in cog_list:
+                result += f"|-- {cog} - v{getattr(cog, 'version', 'ersion undefined')}"
+        await self.bot.reply(ctx, result)
 
 
 def setup(bot):
