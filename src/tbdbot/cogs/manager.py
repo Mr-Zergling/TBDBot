@@ -6,13 +6,13 @@ TBD_BOT_COG_PREFIX = "tbdbot.cogs."
 
 
 def qualify_name(name):
-    if not name.starts_with(TBD_BOT_COG_PREFIX):
+    if not name.startswith(TBD_BOT_COG_PREFIX):
         return TBD_BOT_COG_PREFIX + name
     return name
 
 
 def unqualify_name(name):
-    if name.starts_with(TBD_BOT_COG_PREFIX):
+    if name.startswith(TBD_BOT_COG_PREFIX):
         return name.lstrip(TBD_BOT_COG_PREFIX)
     return name
 
