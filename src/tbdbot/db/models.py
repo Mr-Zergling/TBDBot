@@ -27,7 +27,6 @@ class Message(Model):
     author = fields.ForeignKeyField("tbdbot.User")
 
 
-
 class Emoji(Model):
     id = fields.TextField(pk=True)
     server_id = fields.BigIntField(index=True)
@@ -39,13 +38,13 @@ class Emoji(Model):
 
 class Reaction(Model):
     id = fields.BigIntField(pk=True, generated=True)
-    message = fields.ForeignKeyField("tbdbot.Message")
-    reacting_user = fields.ForeignKeyField("tbdbot.User")
+    message = fields.ForeignKeyField("tbdbot.Message", index=True)
+    reacting_user = fields.ForeignKeyField("tbdbot.User", index=True)
 
 
 class EmojiUse(Model):
     id = fields.BigIntField(pk=True, generated=True)
-    emoji = fields.ForeignKeyField("tbdbot.Emoji")
+    emoji = fields.ForeignKeyField("tbdbot.Emoji", index=True)
     message_id = fields.BigIntField(index=True, null=True)
     reaction_id = fields.BigIntField(Index=True, null=True)
 
