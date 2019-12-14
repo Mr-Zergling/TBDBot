@@ -1,30 +1,53 @@
-from tortoise.models import Model
-from tortoise import fields
+from peewee import *
 
+db = SqliteDatabase("tbdbot.sqlite3")
 
 class Server(Model):
-    id = fields.BigIntField(pk=True, generated=False)
-    server_name = fields.TextField()
+    id = BigIntegerField(primary_key=True, auto_increment)
+    server_name = CharField(max_length=128, index=True)
+
+    class Meta:
+        database = db
 
 
 class User(Model):
-    id = fields.BigIntField(pk=True, generated=False)
-    user_name = fields.TextField()
+    id = BigIntegerField(primary_key=True)
+    user_name = CharField(max_length=64)
+    discriminator = CharField(max_length=8)
+
+
+    class Meta:
+        database = db
+        indexes = (
+            (("user_name", "discriminator"), True)
+        )
+
+class Nick(Model):
+    server = ForeignKeyField(Server, backref="users")
+    user = ForeignKeyField(User, backref="nicks")
+    name = CharField(max_length=64)
+    last_join_date = DateTimeField()
 
 
 class Channel(Model):
-    id = fields.BigIntField(pk=True, generated=False)
-    server_id = fields.BigIntField(index=True)
-    channel_name = fields.TextField()
+    id = BigIntegerField(primary_key=True)
+    server_id = ForeignKeyField(Server, backref="channels")
+    channel_name = CharField(max_length=128)
 
     class Meta:
-        indexes = (("server_id", "id"), )
+        database = db
 
 
 class Message(Model):
-    id = fields.BigIntField(pk=True, generated=False)
-    channel = fields.ForeignKeyField("tbdbot.Channel")
-    author = fields.ForeignKeyField("tbdbot.User")
+    id = BigIntegerField(primary_key=True)
+    channel = ForeignKeyField(Channel, backref="messages")
+    author = ForeignKeyField(User, backref="messages")
+
+    class Meta:
+        database = db
+        indexes = (
+            (("author", "channel"), False),
+        )
 
 
 class Emoji(Model):
@@ -33,13 +56,16 @@ class Emoji(Model):
     image_hash = fields.CharField(index=True, max_length=1024, null=True)
 
     class Meta:
-        index = (("server_id", "id"), ("server_id", "image_hash"), )
+        database = db
 
 
 class Reaction(Model):
     id = fields.BigIntField(pk=True, generated=True)
     message = fields.ForeignKeyField("tbdbot.Message", index=True)
     reacting_user = fields.ForeignKeyField("tbdbot.User", index=True)
+
+    class Meta:
+        database = db
 
 
 class EmojiUse(Model):
@@ -49,4 +75,4 @@ class EmojiUse(Model):
     reaction_id = fields.BigIntField(Index=True, null=True)
 
     class Meta:
-        index = (("emoji_id", "message_id"),("emoji_id", "reaction_id"), )
+        database = db
