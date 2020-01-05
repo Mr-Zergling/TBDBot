@@ -28,6 +28,7 @@ class Server(db.Entity):
 
 class Channel(db.Entity):
     id = PrimaryKey(int, size=64)
+    name = Optional(str)
     messages = Set(Message)
     server = Optional(Server)
     dm_user = Optional('User')

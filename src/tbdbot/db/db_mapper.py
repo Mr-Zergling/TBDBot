@@ -1,6 +1,8 @@
 from discord import channel as discord_channel
 from tbdbot.db.db_model import *
 
+
+@db_session
 def get_or_create_message(apimessage):
     content = apimessage.content
     clean_content = apimessage.clean_content
@@ -26,6 +28,7 @@ def get_or_create_message(apimessage):
     return message
 
 
+@db_session
 def get_or_create_user(apiuser):
     user = User.get(id=apiuser.id)
     name = apiuser.name
@@ -38,6 +41,7 @@ def get_or_create_user(apiuser):
     return user
 
 
+@db_session
 def get_or_create_server(guild):
     server = Server.get(id=guild.id)
     name = guild.name
@@ -49,6 +53,7 @@ def get_or_create_server(guild):
     return server
 
 
+@db_session
 def get_or_create_channel(apichannel):
     channel = Channel.get(id=apichannel.id)
     if not channel:
@@ -58,9 +63,12 @@ def get_or_create_channel(apichannel):
         else:
             channel.server = get_or_create_server(apichannel.guild)
         flush()
+    if hasattr(channel, "name"):
+        channel.name = apichannel.name
     return channel
 
 
+@db_session
 def get_or_create_custom_emoji_in_text(apimessage, use_count, *, api_emoji=None, id=None, name=None):
     message = get_or_create_message(apimessage)
     id = api_emoji.id if api_emoji else id
@@ -74,6 +82,7 @@ def get_or_create_custom_emoji_in_text(apimessage, use_count, *, api_emoji=None,
     return use
 
 
+@db_session
 def get_or_create_custom_emoji(*, api_emoji=None, id=None, name=None):
     id = api_emoji.id if api_emoji else id
     name = api_emoji.name if api_emoji else name
@@ -90,6 +99,8 @@ def get_or_create_custom_emoji(*, api_emoji=None, id=None, name=None):
         emoji.animated = api_emoji.animated
     return emoji
 
+
+@db_session
 def get_or_create_unicode_emoji_in_text(apimessage, use_count, name, codepoint):
     message = get_or_create_message(apimessage)
     emoji = get_or_create_unicode_emoji(name, codepoint)
@@ -98,6 +109,8 @@ def get_or_create_unicode_emoji_in_text(apimessage, use_count, name, codepoint):
         use = InTextEmojiUse(message=message, unicode_emoji=emoji, count=use_count)
     return use
 
+
+@db_session
 def get_or_create_unicode_emoji(name, codepoint):
     emoji = UnicodeEmoji.get(name=name)
     if not emoji:
@@ -105,5 +118,7 @@ def get_or_create_unicode_emoji(name, codepoint):
         flush()
     return emoji
 
+
+@db_session
 def get_or_create_reaction(api_emoji, apiuser, apimessage):
-    pass
+    print(f"db: {apiuser.name} to {apimessage.author}: {str(api_emoji)}")

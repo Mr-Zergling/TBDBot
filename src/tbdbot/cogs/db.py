@@ -1,7 +1,6 @@
 from discord.ext import commands
 from tbdbot.db.db_interface import *
-from tbdbot.util.emoji_util import get_custom_emoji_count_from_string, get_unicode_emoji_count_from_string
-
+import traceback
 from datetime import datetime, timezone, timedelta
 
 
@@ -11,7 +10,7 @@ class MessageListenerCog(commands.Cog):
         self.version = "0.1"
 
     async def fresh_start(self):
-        await consistency_check(self.bot, timedelta(days=1))
+        await consistency_check(self.bot, timedelta(days=2))
 
     @commands.Cog.listener()
     async def on_message(self, message):
@@ -42,35 +41,47 @@ async def consistency_check(bot, timedelta=None):
             continue
         print(f"{channel}")
         try:
-            async for message in channel.history():
+            messages = []
+            reactions = []
+            async for message in channel.history(limit=None):
                 if message.created_at < message_cutoff:
                     break
-                await handle_message(message, bot)
+                messages.append(message)
+                reactions.extend(message.reactions)
+                if len(messages) > 1000:
+                    await bulk_handle_messages_and_reactions(messages, reactions, bot)
+                    messages = []
+                    reactions = []
+            await bulk_handle_messages_and_reactions(messages, reactions, bot)
         except Exception as e:
             print(f"Cannot Access history for: {channel}")
             print(e)
+            traceback.print_exc()
+
+
+async def bulk_handle_messages_and_reactions(messages, reactions, bot):
+    await bulk_upsert_messages(messages, bot)
+    for reaction in reactions:
+        reaction_user_pairs = []
+        async for user in reaction.users():
+            reaction_user_pairs.append((reaction, user))
+        await bulk_upsert_reactions(reaction_user_pairs)
 
 
 async def handle_message(message, bot):
     try:
-        await upsert_message(message)
-        for emoji_tuple, use_count in get_unicode_emoji_count_from_string(message.content).items():
-            await upsert_unicode_emoji_in_text(message, use_count, name=emoji_tuple[0], codepoint=emoji_tuple[1])
-        for emoji_tuple, use_count in get_custom_emoji_count_from_string(message.content).items():
-            name = emoji_tuple[0]
-            id = emoji_tuple[1]
-            api_emoji = bot.get_emoji(id)
-            await upsert_custom_emoji_in_text(message, use_count, emoji=api_emoji, id=id, name=name)
+        await upsert_message(message, bot)
         for reaction in message.reactions:
             async for user in reaction.users():
                 await handle_reaction(reaction, user)
     except Exception as e:
         print(f"Error Handing Message {message}")
         print(e)
+        traceback.print_exc()
 
 
 async def handle_reaction(reaction, user):
-    await upsert_reaction(reaction.emoji, reaction.message, user)
+    await upsert_reaction(reaction.emoji, user, reaction.message)
 
 
 def setup(bot):
