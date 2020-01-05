@@ -14,5 +14,7 @@ setup(name="TBDBot",
         'pandas>0.25,<1',
         'emoji>0.5,<1',
         'psutil>5.6,<6',
+        'pony>0.7',
+        'asgiref>3.2.2'
       ])
 

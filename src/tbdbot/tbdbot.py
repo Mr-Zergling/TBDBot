@@ -12,10 +12,10 @@ class TBDBot(commands.Bot):
     def set_development_mode(self, development_mode):
         self.development_mode = development_mode
 
-    def bot_setup(self):
+    async def bot_setup(self):
         self.load_extension("tbdbot.cogs.extension_manager")
         manager = self.get_cog("ExtensionManagerCog")
-        manager.first_start()
+        await manager.first_start()
 
     async def reply(self, ctx, content=None, *, tts=False, embed=None, file=None, files=None, delete_after=None,
                     nonce=None, dm_reply=False):
@@ -53,6 +53,8 @@ async def on_ready():
     app_info = await bot.application_info()
     bot.owner_id = app_info.owner.id
     print(f"Owner id set to: {bot.owner_id}")
+    await bot.bot_setup()
+
 
 
 def main():
@@ -61,5 +63,4 @@ def main():
     parser.add_argument('--development', action='store_true')
     args = parser.parse_args()
     bot.set_development_mode(args.development)
-    bot.bot_setup()
     bot.run(args.apikey)

@@ -10,6 +10,7 @@ TBD_BOT_COG_PREFIX = "tbdbot.cogs."
 TBD_BOT_STARTUP_EXTENSIONS = [
     "echo",
     "emoji",
+    "db",
 ]
 
 
@@ -31,13 +32,13 @@ class ExtensionManagerCog(commands.Cog):
         self.bot = bot
         self.version = "0.2"
 
-    def first_start(self):
+    async def first_start(self):
         for extension in TBD_BOT_STARTUP_EXTENSIONS:
             self.load_extension(extension)
         for name, cog in self.bot.cogs.items():
             fresh_start = getattr(cog, "fresh_start", None)
             if callable(fresh_start):
-                fresh_start()
+                await fresh_start()
 
     def load_extension(self, name):
         name = qualify_name(name)
