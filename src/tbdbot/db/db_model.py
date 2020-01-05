@@ -9,6 +9,7 @@ class Message(db.Entity):
     id = PrimaryKey(int, size=64)
     reactions = Set('Reaction')
     content = Optional(LongStr)
+    clean_content = Optional(LongStr)
     author = Required('User')
     timestamp = Required(datetime, precision=0, index=True)
     channel = Required('Channel')
@@ -18,9 +19,11 @@ class Message(db.Entity):
 
 class Server(db.Entity):
     id = PrimaryKey(int, size=64)
+    name = Required(str)
     messages = Set(Message)
     channels = Set('Channel')
     settings = Required(Json, default="{}")
+    custom_emojis = Set('CustomEmoji')
 
 
 class Channel(db.Entity):
@@ -32,8 +35,12 @@ class Channel(db.Entity):
 
 class CustomEmoji(db.Entity):
     id = PrimaryKey(int, size=64)
+    name = Required(str, index=True)
     reactions = Set('Reaction')
     in_text_emoji_uses = Set('InTextEmojiUse')
+    server = Optional(Server)
+    animated = Required(bool, default=False)
+    dhash = Optional(int, size=64)
 
 
 class Reaction(db.Entity):
@@ -49,6 +56,7 @@ class InTextEmojiUse(db.Entity):
     message = Required(Message)
     custom_emoji = Optional(CustomEmoji)
     unicode_emoji = Optional('UnicodeEmoji')
+    count = Required(int)
 
 
 class User(db.Entity):
@@ -56,10 +64,12 @@ class User(db.Entity):
     messages = Set(Message)
     dm_channel = Optional(Channel)
     reactions = Set(Reaction)
+    name = Required(str)
+    discriminator = Required(str)
 
 
 class UnicodeEmoji(db.Entity):
-    name = PrimaryKey(str, auto=True)
+    name = PrimaryKey(str)
     codepoint = Optional(str, index=True)
     reactions = Set(Reaction)
     in_text_emoji_uses = Set(InTextEmojiUse)
