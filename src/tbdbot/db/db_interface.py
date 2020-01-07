@@ -64,5 +64,10 @@ def bulk_upsert_reactions(reaction_user_pairs):
         _upsert_single_reaction(reaction.emoji, user, reaction.message)
 
 
+@sync_to_async
+@db_session
+def remove_reaction(emoji_id, user_id, message_id):
+
+
 def _upsert_single_reaction(emoji, user, message):
     mapper.get_or_create_reaction(emoji, user, message)

@@ -4,8 +4,8 @@ import argparse
 
 class TBDBot(commands.Bot):
 
-    def __init__(self, command_prefix):
-        super().__init__(command_prefix)
+    def __init__(self, command_prefix, **options):
+        super().__init__(command_prefix, **options)
         self.development_mode = False
         self.version = "0.00001 prealpha"
 
@@ -43,8 +43,9 @@ class TBDBot(commands.Bot):
             channel = await target.create_dm()
         return channel
 
-BOT_PREFIX = "$"
-bot = TBDBot(BOT_PREFIX)
+
+BOT_PREFIX = commands.when_mentioned_or("$", "!")
+bot = TBDBot(BOT_PREFIX, max_messages=1_000_000)
 
 
 @bot.event
