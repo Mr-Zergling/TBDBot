@@ -1,6 +1,8 @@
 from discord.ext import commands
 import argparse
 
+LOGGING_CHANNEL = 702600576055378003
+
 
 class TBDBot(commands.Bot):
 
@@ -42,6 +44,10 @@ class TBDBot(commands.Bot):
         if not channel:
             channel = await target.create_dm()
         return channel
+
+    async def log(self, message):
+        channel = bot.get_channel(LOGGING_CHANNEL)
+        await channel.send(message)
 
 
 BOT_PREFIX = commands.when_mentioned_or("$", "!")

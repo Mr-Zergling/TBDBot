@@ -8,9 +8,10 @@ from discord.ext import commands
 TBD_BOT_COG_PREFIX = "tbdbot.cogs."
 
 TBD_BOT_STARTUP_EXTENSIONS = [
+    "scheduled_tasks",
+    "user_management",
     "echo",
     "emoji",
-    "db",
 ]
 
 
