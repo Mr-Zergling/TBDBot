@@ -1,6 +1,8 @@
 plugins {
     id 'org.jetbrains.kotlin.jvm' version '1.3.72'
     id 'application'
+    id 'io.gitlab.arturbosch.detekt' version '1.8.0'
+    id 'org.jlleitschuh.gradle.ktlint' version '8.2.0'
 }
 
 group 'bot.tbd'
@@ -26,12 +28,19 @@ dependencies {
 compileKotlin {
     kotlinOptions.jvmTarget = "11"
 }
+
 compileTestKotlin {
     kotlinOptions.jvmTarget = "11"
 }
+
 test{
     useTestNG()
 }
+
+detekt {
+    toolVersion = "1.8.0"
+}
+
 application {
     mainClassName = 'bot.tbd.TBDBotRunner'
 }
