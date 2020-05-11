@@ -1,6 +1,9 @@
 package bot.tbd
 
+import bot.tbd.command.About
+import bot.tbd.command.Hello
 import bot.tbd.config.Config
+import bot.tbd.module.CommandModule
 import com.gitlab.kordlib.core.Kord
 import com.gitlab.kordlib.core.event.gateway.ReadyEvent
 import com.gitlab.kordlib.core.event.message.MessageCreateEvent
@@ -20,11 +23,20 @@ class TBDBotRunner {
     }
 }
 
+object TBDCommandModule : CommandModule(
+    listOf(
+        Hello,
+        About
+    )
+)
+
 object TBDBot {
     suspend fun run() {
         log.info("Logging in....")
         val client = Kord(Config.global.apiToken)
-
+        listOf(
+            TBDCommandModule
+        ).forEach { it.initialize(client) }
         client.on<ReadyEvent> {
             val self = client.getSelf()
             log.info(
@@ -33,7 +45,6 @@ object TBDBot {
         }
 
         client.on<MessageCreateEvent> {
-            val message = this.message
             log.info("${message.author?.username}#${message.author?.discriminator}: ${message.content}")
         }
 
