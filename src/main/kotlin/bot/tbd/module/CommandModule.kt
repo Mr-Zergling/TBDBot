@@ -17,11 +17,12 @@ private val log = KotlinLogging.logger {}
 
 abstract class CommandModule(val topLevelCommands: List<Command>) : Module {
 
-    companion object{
+    companion object {
         private const val COMMAND_PREFIX = "(\\%|\\$)"
         private const val TRIGGER_GROUP_NAME = "trigger"
         private const val ARGS_GROUP_NAME = "args"
     }
+
     private var selfId: Snowflake? = null
 
     val commandMap = generateCommandMap(topLevelCommands)
@@ -49,18 +50,18 @@ abstract class CommandModule(val topLevelCommands: List<Command>) : Module {
     }
 
     suspend fun handleMessage(message: Message) {
-        if(message.author?.id == selfId) return
+        if (message.author?.id == selfId) return
         val matcher = fullCommandPattern.matcher(message.content)
-        if(!matcher.matches()) return
+        if (!matcher.matches()) return
         try {
             val context = createContext(message, matcher)
             commandMap[context.trigger]?.execute(context)
-        } catch (e: Exception) {
+        } catch (e: IllegalStateException) {
             log.error(e)
         }
     }
 
-    private fun createContext(message: Message, matcher: Matcher): CommandContext{
+    private fun createContext(message: Message, matcher: Matcher): CommandContext {
         val trigger = matcher.group(TRIGGER_GROUP_NAME)
         var args = ""
         try {

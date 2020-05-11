@@ -31,12 +31,8 @@ class MessageExtensionsTest : BaseTest() {
     }
 
     @Test
-    suspend fun testGetAuthorNickWithGuildMessage() {
-
-    }
+    suspend fun testGetAuthorNickWithGuildMessage() { }
 
     @Test
-    suspend fun testGetAuthorNickWithDMMessage() {
-
-    }
+    suspend fun testGetAuthorNickWithDMMessage() { }
 }
