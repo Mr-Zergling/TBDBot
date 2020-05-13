@@ -12,6 +12,9 @@ class CWBanCog(commands.Cog):
     @commands.command(name="cwbanme")
     async def self_cw_ban(self, ctx, *, time="1hr"):
         ban_end_date = parse_time_period(time)
+        if not ban_end_date:
+            await self.bot.reply(ctx, "invalid time period (rude)")
+            return
         if not ctx.guild:
             await self.bot.reply(ctx, "Must be used in a server!", dm_reply=True)
             return
