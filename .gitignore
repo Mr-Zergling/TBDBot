@@ -1,2 +1,7 @@
 .idea/*
 bot_config.json
+.gradle/*
+build/
+gradlew
+gradlew.bat
+gradle/
