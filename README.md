@@ -1,4 +1,4 @@
-##TBD Bot 2: Kotlin Boogaloo
+## TBD Bot 2: Kotlin Boogaloo
 
 A rewrite of TBDBot in Kotlin, because python gets hard to manage
 as the size of the codebase increases.
