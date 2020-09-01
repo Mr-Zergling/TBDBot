@@ -2,6 +2,7 @@ package bot.tbd.config
 
 import com.beust.klaxon.Klaxon
 import java.io.File
+import java.nio.file.Paths
 
 object Config {
 
@@ -12,4 +13,7 @@ object Config {
     }
 }
 
-data class BotConfig(val apiToken: String)
+data class BotConfig(
+    val apiToken: String,
+    val storageDir: String = Paths.get(".").toAbsolutePath().normalize().toString()
+)
