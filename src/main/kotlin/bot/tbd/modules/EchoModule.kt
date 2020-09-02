@@ -1,7 +1,8 @@
 @file:AutoWired
 
-package bot.tbd
+package bot.tbd.modules
 
+import bot.tbd.util.Preconditions
 import bot.tbd.scheduling.RemindMeTask
 import bot.tbd.scheduling.scheduleTask
 import bot.tbd.util.DateParsing

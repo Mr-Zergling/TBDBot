@@ -1,4 +1,4 @@
-package bot.tbd
+package bot.tbd.util
 
 import com.gitlab.kordlib.kordx.commands.kord.model.precondition.precondition
 
