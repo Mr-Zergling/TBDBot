@@ -33,7 +33,7 @@ dependencies {
     implementation "com.gitlab.kordlib.kord:kord-core:0.5.11"
     implementation 'com.beust:klaxon:5.2'
     implementation "com.gitlab.kordlib.kordx:kordx-commands-runtime-kord:0.2.1"
-    implementation "com.rubiconproject.oss:jchronic:0.2.8"
+    implementation "com.joestelmach:natty:0.13"
     compile "com.xenomachina:kotlin-argparser:2.0.7"
     kapt("com.gitlab.kordlib.kordx:kordx-commands-processor:0.2.1")
     testImplementation 'io.mockk:mockk:1.10.0'

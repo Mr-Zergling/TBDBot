@@ -4,11 +4,11 @@ package bot.tbd
 
 import bot.tbd.scheduling.RemindMeTask
 import bot.tbd.scheduling.scheduleTask
+import bot.tbd.util.DateParsing
 import com.gitlab.kordlib.kordx.commands.annotation.AutoWired
 import com.gitlab.kordlib.kordx.commands.argument.text.StringArgument
 import com.gitlab.kordlib.kordx.commands.kord.module.module
 import com.gitlab.kordlib.kordx.commands.model.command.invoke
-import com.mdimension.jchronic.Chronic
 import mu.KotlinLogging
 import java.time.Instant
 
@@ -47,13 +47,13 @@ val echoModule = module("echo-module") {
                 respond("At least need something resembling a time")
                 return@invoke
             }
-            val parsedSpan = Chronic.parse(split[0])
-            if (parsedSpan == null) {
+            val parsedTime = DateParsing.natLanguageToInstant(split[0])
+            if (parsedTime == null) {
                 respond("Couldn't parse a time out of that")
                 return@invoke
             }
             val task = RemindMeTask(
-                parsedSpan.beginCalendar.timeInMillis,
+                parsedTime.toEpochMilli(),
                 author.id.value,
                 split.takeLast(split.size - 1).joinToString(",").trim()
             )
