@@ -2,7 +2,7 @@
 
 package bot.tbd
 
-import bot.tbd.scheduling.RemindMeData
+import bot.tbd.scheduling.RemindMeTask
 import bot.tbd.scheduling.scheduleTask
 import com.gitlab.kordlib.kordx.commands.annotation.AutoWired
 import com.gitlab.kordlib.kordx.commands.argument.text.StringArgument
@@ -52,14 +52,14 @@ val echoModule = module("echo-module") {
                 respond("Couldn't parse a time out of that")
                 return@invoke
             }
-            val taskData = RemindMeData(
+            val task = RemindMeTask(
                 parsedSpan.beginCalendar.timeInMillis,
                 author.id.value,
                 split.takeLast(split.size - 1).joinToString(",").trim()
             )
-            scheduleTask(taskData)
+            scheduleTask(task)
             respond(
-                "You will be reminded at ${Instant.ofEpochMilli(taskData.executionTime)} of ${taskData.reminderText}"
+                "You will be reminded at ${Instant.ofEpochMilli(task.executionTime)} of ${task.reminderText}"
             )
         }
     }

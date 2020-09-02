@@ -28,8 +28,8 @@ class ScheduledTaskExecutor(storagePath: String, private val kord: Kord) {
         instance = this
     }
 
-    suspend fun addTask(taskData: ScheduledTaskData) {
-        taskQueue.insert(taskData)
+    suspend fun addTask(task: ScheduledTask) {
+        taskQueue.insert(task)
         GlobalScope.launch { pollAndLaunch() }
     }
 
@@ -37,7 +37,7 @@ class ScheduledTaskExecutor(storagePath: String, private val kord: Kord) {
         while (true) {
             val peeked = taskQueue.peek()
             if (peeked != null && Instant.ofEpochMilli(peeked.executionTime) <= Instant.now()) {
-                taskQueue.poll()?.let { GlobalScope.launch { runAppropriateTask(it) } }
+                taskQueue.poll()?.let { GlobalScope.launch { it.execute(kord) } }
             } else {
                 break
             }
@@ -49,11 +49,4 @@ class ScheduledTaskExecutor(storagePath: String, private val kord: Kord) {
             }
         }
     }
-
-    private suspend fun runAppropriateTask(taskData: ScheduledTaskData) =
-        when (taskData) {
-            is RemoveMemberRoleData -> RemoveMemberRoleTask.execute(taskData, kord)
-            is RemindMeData -> RemindMeTask.execute(taskData, kord)
-            else -> throw IllegalArgumentException("Unknown Task Data Type: ${taskData::class}")
-        }
 }

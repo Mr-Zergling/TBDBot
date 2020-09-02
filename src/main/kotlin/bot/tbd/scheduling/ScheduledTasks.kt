@@ -14,56 +14,50 @@ import kotlin.reflect.KClass
 
 private val log = KotlinLogging.logger {}
 
-@TypeFor(field = "type", adapter = ScheduledTaskDataTypeAdapter::class)
-abstract class ScheduledTaskData(
+@TypeFor(field = "type", adapter = ScheduledTaskTypeAdapter::class)
+abstract class ScheduledTask(
     val id: String = UUID.randomUUID().toString(),
-    open val executionTime: Long,
+    val executionTime: Long,
     val type: String
-)
-
-abstract class ScheduledTask<D : ScheduledTaskData> {
-    abstract suspend fun execute(taskData: D, kord: Kord): Any
+) {
+    abstract suspend fun execute(kord: Kord): Any
 }
 
-data class RemoveMemberRoleData(
-    override val executionTime: Long,
+class RemoveMemberRoleTask(
+    executionTime: Long,
     val roleId: String,
     val memberId: String,
     val guildId: String
-) : ScheduledTaskData(executionTime = executionTime, type = RemoveMemberRoleData::class.simpleNameOrEmpty())
-
-object RemoveMemberRoleTask : ScheduledTask<RemoveMemberRoleData>() {
-    override suspend fun execute(taskData: RemoveMemberRoleData, kord: Kord) =
-        kord.getGuild(taskData.guildId.toSnowflake())
-            ?.getMember(taskData.memberId.toSnowflake())
-            ?.removeRole(taskData.roleId.toSnowflake())
-            ?: log.error("Guild with id ${taskData.guildId} was null")
+) : ScheduledTask(executionTime = executionTime, type = RemoveMemberRoleTask::class.simpleNameOrEmpty()) {
+    override suspend fun execute(kord: Kord) =
+        kord.getGuild(guildId.toSnowflake())
+            ?.getMember(memberId.toSnowflake())
+            ?.removeRole(roleId.toSnowflake())
+            ?: log.error("Guild with id $guildId was null")
 }
 
-data class RemindMeData(
-    override val executionTime: Long,
+class RemindMeTask(
+    executionTime: Long,
     val userId: String,
     val reminderText: String
-) : ScheduledTaskData(executionTime = executionTime, type = RemindMeData::class.simpleNameOrEmpty())
-
-object RemindMeTask : ScheduledTask<RemindMeData>() {
-    override suspend fun execute(taskData: RemindMeData, kord: Kord) =
-        kord.getUser(taskData.userId.toSnowflake())
+) : ScheduledTask(executionTime = executionTime, type = RemindMeTask::class.simpleNameOrEmpty()) {
+    override suspend fun execute(kord: Kord) =
+        kord.getUser(userId.toSnowflake())
             ?.getDmChannel()
-            ?.createMessage("Reminder: ${taskData.reminderText}")
-            ?: log.error("User for reminder task $taskData was null")
+            ?.createMessage("Reminder: $reminderText")
+            ?: log.error("User for reminder task $this was null")
 }
 
-class ScheduledTaskDataTypeAdapter : TypeAdapter<ScheduledTaskData> {
-    override fun classFor(type: Any): KClass<out ScheduledTaskData> =
+class ScheduledTaskTypeAdapter : TypeAdapter<ScheduledTask> {
+    override fun classFor(type: Any): KClass<out ScheduledTask> =
         when (type as String) {
-            RemoveMemberRoleData::class.simpleNameOrEmpty() -> RemoveMemberRoleData::class
-            RemindMeData::class.simpleNameOrEmpty() -> RemindMeData::class
+            RemoveMemberRoleTask::class.simpleNameOrEmpty() -> RemoveMemberRoleTask::class
+            RemindMeTask::class.simpleNameOrEmpty() -> RemindMeTask::class
             else -> throw IllegalArgumentException("Unknown type: $type")
         }
 }
 
 fun KClass<*>.simpleNameOrEmpty() = this.simpleName.orEmpty()
 
-suspend fun KordCommandEvent.scheduleTask(taskData: ScheduledTaskData) =
+suspend fun KordCommandEvent.scheduleTask(taskData: ScheduledTask) =
     ScheduledTaskExecutor.instance.addTask(taskData)

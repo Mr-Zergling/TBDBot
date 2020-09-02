@@ -9,23 +9,23 @@ import kotlin.collections.HashMap
 
 class ScheduledTaskQueue(private val storagePath: String) {
     val mutex = Mutex()
-    val queue = PriorityQueue<ScheduledTaskData> { data1: ScheduledTaskData, data2: ScheduledTaskData ->
-        data1.executionTime.compareTo(data2.executionTime)
+    val queue = PriorityQueue<ScheduledTask> { task1: ScheduledTask, task2: ScheduledTask ->
+        task1.executionTime.compareTo(task2.executionTime)
     }
-    val map = HashMap<String, ScheduledTaskData>()
+    val map = HashMap<String, ScheduledTask>()
 
-    suspend fun insert(taskData: ScheduledTaskData) =
+    suspend fun insert(task: ScheduledTask) =
         mutex.withLock {
-            unsafeInsert(taskData)
-            saveToDisk(taskData)
+            unsafeInsert(task)
+            saveToDisk(task)
         }
 
-    suspend fun peek(): ScheduledTaskData? =
+    suspend fun peek(): ScheduledTask? =
         mutex.withLock {
             return queue.peek()
         }
 
-    suspend fun poll(): ScheduledTaskData? =
+    suspend fun poll(): ScheduledTask? =
         mutex.withLock {
             val popped = queue.poll()
             popped?.id?.let {
@@ -44,28 +44,28 @@ class ScheduledTaskQueue(private val storagePath: String) {
         mutex.withLock {
             File(storagePath).walk().forEach {
                 if (it.isFile && it.extension == "json") {
-                    val taskData = Klaxon().parse<ScheduledTaskData>(it)
-                    taskData?.let { data -> unsafeInsert(data) }
+                    val task = Klaxon().parse<ScheduledTask>(it)
+                    task?.let { task -> unsafeInsert(task) }
                 }
             }
         }
     }
 
-    private fun unsafeInsert(taskData: ScheduledTaskData) {
-        map[taskData.id] = taskData
-        queue.add(taskData)
+    private fun unsafeInsert(task: ScheduledTask) {
+        map[task.id] = task
+        queue.add(task)
     }
 
-    private fun saveToDisk(data: ScheduledTaskData) {
-        File(makeFilePath(data)).writeText(Klaxon().toJsonString(data))
+    private fun saveToDisk(task: ScheduledTask) {
+        File(makeFilePath(task)).writeText(Klaxon().toJsonString(task))
     }
 
-    private fun removeFromDiskIfExists(data: ScheduledTaskData) {
-        val file = File(makeFilePath(data))
+    private fun removeFromDiskIfExists(task: ScheduledTask) {
+        val file = File(makeFilePath(task))
         if (file.exists()) {
             file.delete()
         }
     }
 
-    private fun makeFilePath(data: ScheduledTaskData) = "$storagePath${data.id}.json"
+    private fun makeFilePath(task: ScheduledTask) = "$storagePath${task.id}.json"
 }
