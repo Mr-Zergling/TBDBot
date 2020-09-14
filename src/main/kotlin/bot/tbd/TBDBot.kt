@@ -34,7 +34,7 @@ suspend fun main(args: Array<String>) {
     ScheduledTaskExecutor("${Config.global.storageDir}/tasks/", kord)
     bot(kord) {
         prefix {
-            kord { literal("$") or mention() }
+            kord { literal("$") or literal("!") or mention() }
         }
         configure()
     }
