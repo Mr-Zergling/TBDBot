@@ -22,7 +22,7 @@ val portalModule = module("portal") {
                     val sourceUrl = createMessageLink(message)
                     val destMessage = channel.createEmbed {
                         title = "Portal from ${(message.getChannel() as GuildMessageChannel).name}"
-                        description = "[${message.getAuthorAsMember()!!.nicknameMention}: $msg]($sourceUrl)"
+                        description = "[${message.getAuthorAsMember()?.displayName}: $msg]($sourceUrl)"
                         color = Color.ORANGE
                         thumbnail {
                             url = ResourceUrls.orangePortal
@@ -31,7 +31,7 @@ val portalModule = module("portal") {
                     val destUrl = createMessageLink((destMessage))
                     message.channel.createEmbed {
                         title = "Portal to ${channel.name}"
-                        description = "[${message.getAuthorAsMember()!!.nicknameMention}: $msg]($destUrl)"
+                        description = "[${message.getAuthorAsMember()?.displayName}: $msg]($destUrl)"
                         color = Color.BLUE
                         thumbnail {
                             url = ResourceUrls.bluePortal

@@ -6,16 +6,49 @@ import bot.tbd.util.Preconditions
 import bot.tbd.scheduling.RemindMeTask
 import bot.tbd.scheduling.scheduleTask
 import bot.tbd.util.DateParsing
+import bot.tbd.util.toSnowflake
+import com.gitlab.kordlib.core.behavior.channel.createEmbed
+import com.gitlab.kordlib.core.entity.channel.GuildMessageChannel
+import com.gitlab.kordlib.core.event.message.MessageCreateEvent
 import com.gitlab.kordlib.kordx.commands.annotation.AutoWired
 import com.gitlab.kordlib.kordx.commands.argument.text.StringArgument
 import com.gitlab.kordlib.kordx.commands.kord.module.module
 import com.gitlab.kordlib.kordx.commands.model.command.invoke
 import mu.KotlinLogging
+import java.awt.Color
 import java.time.Instant
 
 private val log = KotlinLogging.logger {}
 
-val echoModule = module("echo-module") {
+object EchoModule {
+
+    private val messageSpecifyingRegex = Regex("/(?<guild>\\d{16,})/(?<channel>\\d{16,})/(?<message>\\d{16,})")
+
+    // magic number at least till I figure out how to let me get groups by name
+    @Suppress("MagicNumber", "ReturnCount")
+    suspend fun autoQuote(messageCreateEvent: MessageCreateEvent) {
+        val client = messageCreateEvent.kord
+        val triggerMessage = messageCreateEvent.message
+        val groups = messageSpecifyingRegex.find(triggerMessage.content)?.groups ?: return
+        val quotedGuild = groups[1]?.value?.let { client.getGuild(it.toSnowflake()) } ?: return
+        val quotedChannel = groups[2]?.value?.let { quotedGuild.getChannel(it.toSnowflake()) } ?: return
+        val quotedMessage =
+            groups[3]?.value?.let { (quotedChannel as GuildMessageChannel).getMessage(it.toSnowflake()) } ?: return
+        triggerMessage.channel.createEmbed {
+            color = Color.GREEN
+            description = quotedMessage.content
+            author {
+                name = "${quotedMessage.author?.username}#${quotedMessage.author?.discriminator}"
+                icon = quotedMessage.author?.avatar?.url
+            }
+            footer {
+                text = "${quotedMessage.timestamp}"
+            }
+        }
+    }
+}
+
+val kordEchoModule = module("echo-module") {
     command("ping") {
         invoke {
             respond("Pong, ${author.tag}")

@@ -4,8 +4,10 @@
 package bot.tbd
 
 import bot.tbd.config.Config
+import bot.tbd.modules.EchoModule
 import bot.tbd.scheduling.ScheduledTaskExecutor
 import com.gitlab.kordlib.core.Kord
+import com.gitlab.kordlib.core.on
 import com.gitlab.kordlib.kordx.commands.annotation.AutoWired
 import com.gitlab.kordlib.kordx.commands.kord.bot
 import com.gitlab.kordlib.kordx.commands.kord.model.prefix.kord
@@ -17,7 +19,6 @@ import kapt.kotlin.generated.configure
 import mu.KotlinLogging
 
 private val log = KotlinLogging.logger {}
-lateinit var kord: Kord
 
 class TBDBotArgs(parser: ArgParser) {
     val configFilePath by parser.storing(
@@ -30,7 +31,8 @@ suspend fun main(args: Array<String>) {
     Config.init(parsedArgs.configFilePath)
     log.info("Parsed Config File ${parsedArgs.configFilePath}")
     log.info("Storage Dir Set to ${Config.global.storageDir}")
-    kord = Kord(Config.global.apiToken)
+    val kord = Kord(Config.global.apiToken)
+    kord.on(consumer = EchoModule::autoQuote)
     ScheduledTaskExecutor("${Config.global.storageDir}/tasks/", kord)
     bot(kord) {
         prefix {
