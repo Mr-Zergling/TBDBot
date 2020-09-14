@@ -22,13 +22,19 @@ private val log = KotlinLogging.logger {}
 
 object EchoModule {
 
-    private val messageSpecifyingRegex = Regex("/(?<guild>\\d{16,})/(?<channel>\\d{16,})/(?<message>\\d{16,})")
+    private const val msgLinkPattern =
+        "https://discordapp.com/channels/(?<guild>\\d{16,})/(?<channel>\\d{16,})/(?<message>\\d{16,})"
+    private val messageSpecifyingRegex =
+        Regex(msgLinkPattern)
+    private val ignoreLinkRegex =
+        Regex(".*<$msgLinkPattern>.*")
 
     // magic number at least till I figure out how to let me get groups by name
     @Suppress("MagicNumber", "ReturnCount")
     suspend fun autoQuote(messageCreateEvent: MessageCreateEvent) {
         val client = messageCreateEvent.kord
         val triggerMessage = messageCreateEvent.message
+        if (ignoreLinkRegex.matches(triggerMessage.content)) return
         val groups = messageSpecifyingRegex.find(triggerMessage.content)?.groups ?: return
         val quotedGuild = groups[1]?.value?.let { client.getGuild(it.toSnowflake()) } ?: return
         val quotedChannel = groups[2]?.value?.let { quotedGuild.getChannel(it.toSnowflake()) } ?: return
