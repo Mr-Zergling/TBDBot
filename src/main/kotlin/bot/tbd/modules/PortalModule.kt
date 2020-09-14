@@ -46,5 +46,4 @@ val portalModule = module("portal") {
 
 suspend fun createMessageLink(message: Message): String =
     "https://discordapp.com/channels/${message.getGuild().id.value}/" +
-            "${message.getChannel().id.value}/" +
-            "$message.id.value"
+            "${message.getChannel().id.value}/" + message.id.value
