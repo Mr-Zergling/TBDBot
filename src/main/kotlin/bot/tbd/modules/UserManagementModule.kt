@@ -31,7 +31,10 @@ val userManagementModule = module("user-management") {
                         guild!!.id.value
                     )
                 )
-            } ?: channel.createMessage("Couldn't parse a date from $str")
+            } ?: run {
+                channel.createMessage("Couldn't parse a date from $str")
+                return@invoke
+            }
             author.asMember(guild!!.id)
                 .addRole(Config.getGuildConfig(guild!!.id, GuildConfigKey.CW_BAN_ROLE).toSnowflake())
             respond("${user.username}#${user.discriminator} CWBanned until $until")
