@@ -7,6 +7,7 @@ import bot.tbd.config.GuildConfigKey
 import bot.tbd.scheduling.RemoveMemberRoleTask
 import bot.tbd.scheduling.ScheduledTaskExecutor
 import bot.tbd.util.DateParsing
+import bot.tbd.util.toSnowflake
 import com.gitlab.kordlib.kordx.commands.annotation.AutoWired
 import com.gitlab.kordlib.kordx.commands.argument.text.StringArgument
 import com.gitlab.kordlib.kordx.commands.kord.module.module
@@ -31,6 +32,8 @@ val userManagementModule = module("user-management") {
                     )
                 )
             } ?: channel.createMessage("Couldn't parse a date from $str")
+            author.asMember(guild!!.id)
+                .addRole(Config.getGuildConfig(guild!!.id, GuildConfigKey.CW_BAN_ROLE).toSnowflake())
             respond("${user.username}#${user.discriminator} CWBanned until $until")
         }
     }
