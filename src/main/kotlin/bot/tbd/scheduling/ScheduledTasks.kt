@@ -5,10 +5,9 @@ package bot.tbd.scheduling
 import bot.tbd.util.toSnowflake
 import com.beust.klaxon.TypeAdapter
 import com.beust.klaxon.TypeFor
-import com.gitlab.kordlib.core.Kord
-import com.gitlab.kordlib.kordx.commands.kord.model.context.KordCommandEvent
+import com.kotlindiscord.kord.extensions.commands.MessageCommand
+import dev.kord.core.Kord
 import mu.KotlinLogging
-import org.koin.core.get
 import java.util.*
 import kotlin.reflect.KClass
 
@@ -59,5 +58,5 @@ class ScheduledTaskTypeAdapter : TypeAdapter<ScheduledTask> {
 
 fun KClass<*>.simpleNameOrEmpty() = this.simpleName.orEmpty()
 
-suspend fun KordCommandEvent.scheduleTask(taskData: ScheduledTask) =
+suspend fun scheduleTask(taskData: ScheduledTask) =
     ScheduledTaskExecutor.instance.addTask(taskData)

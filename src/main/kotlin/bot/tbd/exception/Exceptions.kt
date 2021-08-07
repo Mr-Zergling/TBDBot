@@ -1,7 +1,7 @@
 package bot.tbd.exception
 
 import bot.tbd.config.GuildConfigKey
-import com.gitlab.kordlib.common.entity.Snowflake
+import dev.kord.common.entity.Snowflake
 import java.lang.RuntimeException
 
 class NoGuildConfigValueFound(guildId: String, key: GuildConfigKey) :

@@ -2,7 +2,7 @@ package bot.tbd.config
 
 import bot.tbd.exception.NoGuildConfigurationFound
 import com.beust.klaxon.Klaxon
-import com.gitlab.kordlib.common.entity.Snowflake
+import dev.kord.common.entity.Snowflake
 import java.io.File
 import java.nio.file.Paths
 
@@ -19,7 +19,7 @@ object Config {
     }
 
     fun getGuildConfig(guild: Snowflake, key: GuildConfigKey): String =
-        guildConfigs[guild.value]?.getValue(key) ?: throw NoGuildConfigurationFound(guild)
+        guildConfigs[guild.asString]?.getValue(key) ?: throw NoGuildConfigurationFound(guild)
 
     private fun loadGuildConfigs(guildConfigBasePath: String) {
         val storage = File(guildConfigBasePath)

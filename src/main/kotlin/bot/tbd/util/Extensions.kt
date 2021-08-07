@@ -1,5 +1,6 @@
 package bot.tbd.util
 
-import com.gitlab.kordlib.common.entity.Snowflake
+import dev.kord.common.entity.Snowflake
+
 
 fun String.toSnowflake() = Snowflake(this)

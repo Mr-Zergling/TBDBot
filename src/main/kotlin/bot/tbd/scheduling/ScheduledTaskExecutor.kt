@@ -1,6 +1,6 @@
 package bot.tbd.scheduling
 
-import com.gitlab.kordlib.core.Kord
+import dev.kord.core.Kord
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.io.File

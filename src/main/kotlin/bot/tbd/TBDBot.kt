@@ -1,21 +1,17 @@
 @file:Suppress("MatchingDeclarationName")
-@file:AutoWired
 
 package bot.tbd
 
 import bot.tbd.config.Config
-import bot.tbd.modules.EchoModule
+import bot.tbd.extensions.EchoExtension
+import bot.tbd.extensions.PortalExtension
+import bot.tbd.extensions.UserManagementExtension
 import bot.tbd.scheduling.ScheduledTaskExecutor
-import com.gitlab.kordlib.core.Kord
-import com.gitlab.kordlib.core.on
-import com.gitlab.kordlib.kordx.commands.annotation.AutoWired
-import com.gitlab.kordlib.kordx.commands.kord.bot
-import com.gitlab.kordlib.kordx.commands.kord.model.prefix.kord
-import com.gitlab.kordlib.kordx.commands.kord.model.prefix.mention
-import com.gitlab.kordlib.kordx.commands.model.prefix.literal
-import com.gitlab.kordlib.kordx.commands.model.prefix.or
+import com.kotlindiscord.kord.extensions.DISCORD_BLURPLE
+import com.kotlindiscord.kord.extensions.ExtensibleBot
+import com.kotlindiscord.kord.extensions.utils.getKoin
 import com.xenomachina.argparser.ArgParser
-import kapt.kotlin.generated.configure
+import dev.kord.core.Kord
 import mu.KotlinLogging
 
 private val log = KotlinLogging.logger {}
@@ -31,13 +27,20 @@ suspend fun main(args: Array<String>) {
     Config.init(parsedArgs.configFilePath)
     log.info("Parsed Config File ${parsedArgs.configFilePath}")
     log.info("Storage Dir Set to ${Config.global.storageDir}")
-    val kord = Kord(Config.global.apiToken)
-    kord.on(consumer = EchoModule::autoQuote)
-    ScheduledTaskExecutor("${Config.global.storageDir}/tasks/", kord)
-    bot(kord) {
-        prefix {
-            kord { literal("!") or mention() }
+    val bot = ExtensibleBot(Config.global.apiToken){
+        messageCommands {
+            defaultPrefix = "!"
         }
-        configure()
+        extensions {
+            add(::EchoExtension)
+            add(::PortalExtension)
+            add(::UserManagementExtension)
+            help {
+                pingInReply = true
+                color { DISCORD_BLURPLE }
+            }
+        }
     }
+    ScheduledTaskExecutor("${Config.global.storageDir}/tasks/", getKoin().get<Kord>())
+    bot.start()
 }
