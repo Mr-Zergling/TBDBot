@@ -29,15 +29,14 @@ class PortalExtension : Extension() {
             description = "Portal to another channel"
 
             check {
-                failIfNot(message = "Can only be used in a server channel") {
-                    event.message.channel is GuildMessageChannel
+                failIf(message = "Can only be used in a server channel") {
+                    event.getGuild() == null
                 }
             }
 
             action {
-                val srcChannel = message.channel
-                val destChannel = arguments.destination
-                when (destChannel) {
+                val srcChannel = message.channel.asChannel()
+                when (val destChannel = arguments.destination) {
                     is GuildMessageChannel -> {
                         val destMessage = destChannel.createMessage("Incoming portal....")
                         val destUrl = createMessageLink(destMessage)
