@@ -2,7 +2,7 @@ package bot.tbd.extensions
 
 import bot.tbd.util.ResourceUrls
 import com.kotlindiscord.kord.extensions.commands.converters.impl.channel
-import com.kotlindiscord.kord.extensions.commands.converters.impl.string
+import com.kotlindiscord.kord.extensions.commands.converters.impl.defaultingString
 import com.kotlindiscord.kord.extensions.commands.parser.Arguments
 import com.kotlindiscord.kord.extensions.extensions.Extension
 import com.kotlindiscord.kord.extensions.utils.respond
@@ -20,7 +20,7 @@ class PortalExtension : Extension() {
 
     inner class PortalArgs : Arguments() {
         val destination by channel(displayName = "Destination Channel", description = "The channel to open a portal to")
-        val portalMessage by string(displayName = "Portal Message", description = "The message on the portal")
+        val portalMessage by defaultingString(displayName = "Portal Message", description = "The message on the portal", defaultValue = "Unnamed Portal")
     }
 
     override suspend fun setup() {
