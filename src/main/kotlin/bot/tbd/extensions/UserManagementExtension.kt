@@ -10,6 +10,7 @@ import com.kotlindiscord.kord.extensions.commands.converters.impl.coalescedStrin
 import com.kotlindiscord.kord.extensions.commands.parser.Arguments
 import com.kotlindiscord.kord.extensions.extensions.Extension
 import com.kotlindiscord.kord.extensions.utils.respond
+import dev.kord.core.any
 
 class UserManagementExtension: Extension() {
     override val name: String = "User Management"
@@ -23,7 +24,12 @@ class UserManagementExtension: Extension() {
             name = "cwbanme"
             description = "CW Ban yourself for a period of time"
             action{
+                val cwBanRole = Config.getGuildConfig(guild!!.id, GuildConfigKey.CW_BAN_ROLE).toSnowflake()
                 val user = message.getAuthorAsMember()!!
+                if(user.roles.any { it.id == cwBanRole}){
+                    message.respond("You're already CW Banned, nerd")
+                    return@action
+                }
                 val until = DateParsing.natLanguageToInstant(arguments.date)
                 until?.let {
                     ScheduledTaskExecutor.instance.addTask(
@@ -38,7 +44,7 @@ class UserManagementExtension: Extension() {
                     channel.createMessage("Couldn't parse a date from ${arguments.date}")
                     return@action
                 }
-                user.addRole(Config.getGuildConfig(guild!!.id, GuildConfigKey.CW_BAN_ROLE).toSnowflake())
+                user.addRole(cwBanRole)
                 message.respond("${user.username}#${user.discriminator} CWBanned until $until")
             }
         }
