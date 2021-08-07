@@ -35,10 +35,11 @@ class ScheduledTaskExecutor(storagePath: String, private val kord: Kord) {
 
     private suspend fun pollAndLaunch() {
         while (true) {
-            val peeked = taskQueue.peek()
-            if (peeked != null && Instant.ofEpochMilli(peeked.executionTime) <= Instant.now()) {
-                taskQueue.poll()?.let { GlobalScope.launch { it.execute(kord) } }
+            val firstTask = taskQueue.poll() ?: break
+            if (Instant.ofEpochMilli(firstTask.executionTime) <= Instant.now()) {
+                GlobalScope.launch { firstTask.execute(kord) }
             } else {
+                taskQueue.insert(firstTask)
                 break
             }
         }
